@@ -46,7 +46,7 @@ public class Controller {
 
   @GetMapping("/test")
   public String test(@RequestHeader("Authorization") String token){
-    return token;
+    return "Hello World!";
   }
 
 }
