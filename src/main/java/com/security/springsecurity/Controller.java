@@ -19,6 +19,11 @@ public class Controller {
     return "Hello, Admin!";
   }
 
+  @GetMapping("/all")
+  public String all() {
+    return "Hello, All!";
+  }
+
 
 }
 
