@@ -16,17 +16,6 @@ public class Controller {
   @Autowired
   private CustomUserDetailsService customUserDetailsService;
 
-//  @PreAuthorize("hasRole('USER')")
-//  @GetMapping("/user")
-//  public String user() {
-//    return "Hello, User!";
-//  }
-//
-//  @PreAuthorize("hasRole('ADMIN')")
-//  @GetMapping("/admin")
-//  public String admin() {
-//    return "Hello, Admin!";
-//  }
 
   @PostMapping("/signup")
   public String signup(@RequestBody UserEntity userEntity) {

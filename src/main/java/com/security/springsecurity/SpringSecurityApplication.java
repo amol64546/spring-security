@@ -10,20 +10,5 @@ public class SpringSecurityApplication {
     SpringApplication.run(SpringSecurityApplication.class, args);
   }
 
-//  @Autowired
-//  private CustomUserDetailsService userDetailsService;
-//
-//  @Bean
-//  public PasswordEncoder passwordEncoder(){
-//    return new BCryptPasswordEncoder();
-//  }
-//
-//  @Bean
-//  public DaoAuthenticationProvider authenticationProvider() {
-//    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//    provider.setUserDetailsService(userDetailsService);
-//    provider.setPasswordEncoder(passwordEncoder());
-//    return provider;
-//  }
 
 }
