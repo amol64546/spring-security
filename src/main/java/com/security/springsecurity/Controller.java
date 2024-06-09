@@ -1,38 +1,53 @@
 package com.security.springsecurity;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.security.springsecurity.Dto.LoginRequest;
+import com.security.springsecurity.Dto.SignupRequest;
+import com.security.springsecurity.Dto.UserEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class Controller {
 
-  @Autowired
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
 
-  @Autowired
-  private CustomUserDetailsService customUserDetailsService;
+  private final PasswordEncoder passwordEncoder;
+
+  private final AuthenticationManager authenticationManager;
 
 
   @PostMapping("/signup")
-  public String signup(@RequestBody UserEntity userEntity) {
-    userRepository.save(userEntity);
+  public String signup(@RequestBody SignupRequest signupRequest) {
+    UserEntity user = UserEntity.builder()
+      .username(signupRequest.getUsername())
+      .password(passwordEncoder.encode(signupRequest.getPassword()))
+      .build();
+
+    userRepository.save(user);
     return "Registered successfully!";
   }
 
   @PostMapping("/login")
-  public String login(@RequestBody UserEntity userEntity) {
-    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEntity.getUsername());
-    if (userDetails.getPassword().equals(userEntity.getPassword())) {
-      return "Login successfully!";
-    } else {
-      throw new UsernameNotFoundException("Invalid username or password");
-    }
+  public String login(@RequestBody LoginRequest loginRequest) {
+
+    authenticationManager.authenticate(
+      new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    return JwtHelper.generateToken(loginRequest.getUsername());
+
   }
 
+  @GetMapping("/test")
+  public String test(@RequestHeader("Authorization") String token){
+    return token;
+  }
 
 }
 
