@@ -1,12 +1,10 @@
 package com.security.springsecurity.config;
 
-import com.security.springsecurity.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,16 +20,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
 
-  private final UserDetailsServiceImpl userDetailsServiceImpl;
+  private final AuthenticationProvider authenticationProvider;
+
   private final JwtAuthFilter jwtAuthFilter;
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
         .cors(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
@@ -41,15 +35,14 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/login/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/swagger/**").permitAll()
             .anyRequest().authenticated())
-        .authenticationManager(authenticationManager)
+      .authenticationProvider(authenticationProvider)
       .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+      .logout(logout -> logout
+        .logoutUrl("/v1/users/logout")
+        .invalidateHttpSession(true)
+        .logoutSuccessUrl("/v1/users/login")
+        .deleteCookies("JSESSIONID"))
       .build();
   }
 
-  @Bean
-  public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-    AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-    authenticationManagerBuilder.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder());
-    return authenticationManagerBuilder.build();
-  }
 }

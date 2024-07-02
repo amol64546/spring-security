@@ -2,7 +2,7 @@ package com.security.springsecurity;
 
 import com.security.springsecurity.Dto.LoginRequest;
 import com.security.springsecurity.Dto.SignupRequest;
-import com.security.springsecurity.Dto.UserEntity;
+import com.security.springsecurity.Dto.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,7 +25,7 @@ public class Controller {
 
   @PostMapping("/signup")
   public String signup(@RequestBody SignupRequest signupRequest) {
-    UserEntity user = UserEntity.builder()
+    User user = User.builder()
       .username(signupRequest.getUsername())
       .password(passwordEncoder.encode(signupRequest.getPassword()))
       .build();
@@ -45,7 +44,7 @@ public class Controller {
   }
 
   @GetMapping("/test")
-  public String test(@RequestHeader("Authorization") String token){
+  public String test(){
     return "Hello World!";
   }
 
